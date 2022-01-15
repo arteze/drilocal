@@ -18,7 +18,7 @@ error_reporting(E_ALL);
 // casne crear_archivo_si_no_existe($url,$datos)
 // ed    es_carpeta($url)
 // ea    es_archivo($url)
-// edsc  es_carpeta_sin_contenido($url)
+// ecsc  es_carpeta_sin_contenido($url)
 // ba    borrar_archivo($url)
 // bc    borrar_carpeta($url)
 // bdsc  borrar_carpeta_sin_contenido($url)
@@ -172,18 +172,27 @@ function es_archivo($url){
 	return $d;
 }
 function es_carpeta_sin_contenido($url){
-	$d = false;
-	$bin_es_carpeta = is_dir($url);
-	if($bin_es_carpeta){
-		$ls = scandir($url);
-		$se_puede_leer = is_readable($url);
-		if($se_puede_leer){
-			$d = count($ls)==2;
-			registrar("eda3 La ruta '$url' existe y es una carpeta.");
+	$d = 3;
+	$se_puede_leer = is_readable($url);
+	if($se_puede_leer){
+		$bin_es_carpeta = is_dir($url);
+		if($bin_es_carpeta){
+			$ls = scandir($url);
+			if(count($ls)==2){
+				registrar("ecsc La carpeta '$url' está vacía.");
+				$d = 1;
+			}else{
+				registrar("ecsc2 La carpeta '$url' tiene cosas dentro.");
+				$d = 2;
+			}
+		}else{
+			registrar("ecsc1 La ruta '$url' es un archivo.");
+			$d = 1;
 		}
 	}else{
-		registrar("eda0 Advertencia: La ruta '$url' es un archivo en vez de una carpeta.");
-	}
+		registrar("ecsc0 La carpeta '$url' no se puede leer.");
+		$d = 4;
+	}	
 	return $d;
 }
 function borrar_archivo($url){
@@ -227,7 +236,7 @@ function borrar_carpeta_sin_contenido($url){
 		$sector = array_slice($partes,0,$i);
 		$subcarpeta = implode("/", $sector);
 		$d = es_carpeta_sin_contenido($subcarpeta);
-		if($d){
+		if($d==1){
 			borrar_carpeta($subcarpeta);
 		}
 	}
@@ -303,7 +312,7 @@ function programa(){
 		es_archivo($url,c);
 		ver_pila();
 	}
-	if(a=="edsc"){
+	if(a=="ecsc"){
 		es_carpeta_sin_contenido($url);
 		ver_pila();
 	}
