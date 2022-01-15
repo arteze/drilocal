@@ -11,14 +11,16 @@ error_reporting(E_ALL);
 // oi    oi($o,$propiedad)
 // oa    oa($o,$propiedad,$valor)
 // cc    crear_carpeta($url)
-// cs    crear_subcarpetas($url)
 // ca    crear_archivo($url,$datos)
+// cs    crear_subcarpeta($url)
 // ccsne crear_carpeta_si_no_existe($url)
 // casne crear_archivo_si_no_existe($url,$datos)
-// edsc  es_directorio_sin_contenido($url)
+// ed    es_carpeta($url)
+// ea    es_archivo($url)
+// edsc  es_carpeta_sin_contenido($url)
 // ba    borrar_archivo($url)
 // bc    borrar_carpeta($url)
-// bdsc  borrar_directorio_sin_contenido($url)
+// bdsc  borrar_carpeta_sin_contenido($url)
 // bu    borrar_url($url)
 
 // programa()
@@ -82,6 +84,16 @@ function crear_archivo($url,$datos){
 		registrar("aco0 Advertencia: No se pudo crear la carpeta '$url', donde va el archivo.");
 	}
 }
+function crear_subcarpeta($url){
+	$partes = explode("/",$url);
+	$t = count($partes);
+	for($i=1;$i<$t;++$i){
+		$sector = array_slice($partes,0,$i);
+		$subcarpeta = implode("/", $sector);
+		crear_carpeta($subcarpeta,$o);
+	}
+	return $t;
+}
 function crear_carpeta_si_no_existe($url){
 	$retorno = 0;
 	$bin_existe_url = file_exists($url);
@@ -120,13 +132,33 @@ function crear_archivo_si_no_existe($url,$datos){
 	}
 	return $retorno;
 }
-function es_directorio_sin_contenido($url){
+function es_carpeta($url){
+	$d = 2;
+	$se_puede_leer = is_readable($url);
+	if($se_puede_leer){
+		registrar("ed La ruta '$url' es una carpeta.");
+		$d = 1;
+	}else{
+		registrar("ed0: La ruta '$url' es un archivo.");
+		$d = 0;
+	}
+	return $d;
+}
+function es_archivo($url){
+	$d = 2;
+	$bin_es_carpeta = es_carpeta($url);
+	if($bin_es_carpeta==0){
+		$d = 1;
+	}
+	return $d;
+}
+function es_carpeta_sin_contenido($url){
 	$d = false;
 	$bin_es_carpeta = is_dir($url);
 	if($bin_es_carpeta){
 		$ls = scandir($url);
-		$es_legible = is_readable($url);
-		if($es_legible){
+		$se_puede_leer = is_readable($url);
+		if($se_puede_leer){
 			$d = count($ls)==2;
 			registrar("eda3 La ruta '$url' existe y es una carpeta.");
 		}
@@ -136,7 +168,7 @@ function es_directorio_sin_contenido($url){
 	return $d;
 }
 function borrar_archivo($url){
-	borrar_directorio_sin_contenido($url);
+	borrar_carpeta_sin_contenido($url);
 	$bin_url_inicio_barra = substr($url,0,1)=="/";
 	if($bin_url_inicio_barra){
 		registrar("abia1 Advertencia: El archivo '$url' es del sistema, por eso no se va a borrar.");
@@ -168,14 +200,14 @@ function borrar_carpeta($url){
 		}
 	}
 }
-function borrar_directorio_sin_contenido($url){
+function borrar_carpeta_sin_contenido($url){
 	$partes = explode("/",$url);
 	$c = count($partes);
 	$i = 1;
 	for(;$i<$c;++$i){
 		$sector = array_slice($partes,0,$i);
 		$subcarpeta = implode("/", $sector);
-		$d = es_directorio_sin_contenido($subcarpeta);
+		$d = es_carpeta_sin_contenido($subcarpeta);
 		if($d){
 			borrar_carpeta($subcarpeta);
 		}
@@ -183,7 +215,7 @@ function borrar_directorio_sin_contenido($url){
 	for(;$i>0;--$i){
 		$sector = array_slice($partes,0,$i);
 		$subcarpeta = implode("/", $sector);
-		$d = es_directorio_sin_contenido($subcarpeta);
+		$d = es_carpeta_sin_contenido($subcarpeta);
 		if($d){
 			borrar_carpeta($subcarpeta);
 		}
@@ -238,7 +270,7 @@ function programa(){
 		var_dump($o);
 	}
 	if(a=="edsc"){
-		es_directorio_sin_contenido($url);
+		es_carpeta_sin_contenido($url);
 		var_dump($o);
 	}
 }
