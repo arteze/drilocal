@@ -144,7 +144,7 @@ function es_carpeta($url){
 		$bin_es_carpeta = is_dir($url);
 		if($bin_es_carpeta){
 			registrar("ec La ruta '$url' es una carpeta.");
-			$d = 3;
+			$d = 1;
 		}else{
 			registrar("ec2 La ruta '$url' es un archivo.");
 			$d = 2;
@@ -297,11 +297,13 @@ function borrar_url($url){
 				if($e==1){$d=1;}
 			}
 		}
-		$bin_es_carpeta = is_dir($url);
-		if($bin_es_carpeta){
+		$bin_es_carpeta = es_carpeta($url);
+		$bin_es_archivo = es_archivo($url);
+		if($bin_es_carpeta==1){
 			$e = borrar_carpeta($url);
 			if($e==1){$d=2;}
-		}else{
+		}
+		if($bin_es_archivo==1){
 			$e = borrar_archivo($url);
 			if($e==1){$d=3;}
 		}
