@@ -59,7 +59,7 @@ function crear_carpeta($url){
 			$ecod = 2;
 		}
 	}else{
-		registrar("ade0 Advertencia: La carpeta '$url' existía.");
+		registrar("de0 La ruta '$url' existía.");
 		$ecod = 3;
 	}
 	return $ecod;
@@ -67,11 +67,9 @@ function crear_carpeta($url){
 function crear_subcarpeta($url){
 	$partes = explode("/",$url);
 	$t = count($partes);
-	for($i=1;$i<$t;++$i){
-		$sector = array_slice($partes,0,$i);
-		$subcarpeta = implode("/", $sector);
-		crear_carpeta($subcarpeta,$o);
-	}
+	$sector = array_slice($partes,0,$t-1);
+	$subcarpeta = implode("/", $sector);
+	crear_carpeta($subcarpeta);
 	return $t;
 }
 function crear_archivo($url,$datos){
@@ -270,6 +268,10 @@ function programa(){
 	}
 	if(a=="cc"){
 		crear_carpeta($url);
+		var_dump($o);
+	}
+	if(a=="cs"){
+		crear_subcarpeta($url);
 		var_dump($o);
 	}
 	if(a=="edsc"){
