@@ -11,8 +11,8 @@ error_reporting(E_ALL);
 // oi    oi($o,$propiedad)
 // oa    oa($o,$propiedad,$valor)
 // cc    crear_carpeta($url)
-// ca    crear_archivo($url,$datos)
 // cs    crear_subcarpeta($url)
+// ca    crear_archivo($url,$datos)
 // ccsne crear_carpeta_si_no_existe($url)
 // casne crear_archivo_si_no_existe($url,$datos)
 // ed    es_carpeta($url)
@@ -64,8 +64,18 @@ function crear_carpeta($url){
 	}
 	return $ecod;
 }
+function crear_subcarpeta($url){
+	$partes = explode("/",$url);
+	$t = count($partes);
+	for($i=1;$i<$t;++$i){
+		$sector = array_slice($partes,0,$i);
+		$subcarpeta = implode("/", $sector);
+		crear_carpeta($subcarpeta,$o);
+	}
+	return $t;
+}
 function crear_archivo($url,$datos){
-	$var_carpeta = crear_carpeta($url);
+	$var_carpeta = crear_subcarpeta($url);
 	if($var_carpeta==1){
 		$var_crear_archivo = file_put_contents($url,$datos);
 		if(!$datos){
@@ -83,16 +93,6 @@ function crear_archivo($url,$datos){
 	}else{
 		registrar("aco0 Advertencia: No se pudo crear la carpeta '$url', donde va el archivo.");
 	}
-}
-function crear_subcarpeta($url){
-	$partes = explode("/",$url);
-	$t = count($partes);
-	for($i=1;$i<$t;++$i){
-		$sector = array_slice($partes,0,$i);
-		$subcarpeta = implode("/", $sector);
-		crear_carpeta($subcarpeta,$o);
-	}
-	return $t;
 }
 function crear_carpeta_si_no_existe($url){
 	$retorno = 0;
@@ -248,8 +248,11 @@ function borrar_url($url){
 function programa(){
 	declarar_get(array("a","b","c"));
 
+	$subcarpeta = json_decode(file_get_contents("subcarpeta.json"))[0];
+
 	$GLOBALS["o"] = (object)array();
-	$GLOBALS["url"] = "../guardado/".b;
+	
+	$GLOBALS["url"] = $subcarpeta.b;
 	$url = $GLOBALS["url"];
 	$o = $GLOBALS["o"];
 	$o->registro = array();
