@@ -19,9 +19,9 @@ error_reporting(E_ALL);
 // ed    es_carpeta($url)
 // ea    es_archivo($url)
 // ecsc  es_carpeta_sin_contenido($url)
-// ba    borrar_archivo($url)
-// bc    borrar_carpeta($url)
 // bcsc  borrar_carpeta_sin_contenido($url)
+// bc    borrar_carpeta($url)
+// ba    borrar_archivo($url)
 // bu    borrar_url($url)
 
 // programa()
@@ -195,24 +195,36 @@ function es_carpeta_sin_contenido($url){
 	}	
 	return $d;
 }
-function borrar_archivo($url){
-	borrar_carpeta_sin_contenido($url);
-	$bin_url_inicio_barra = substr($url,0,1)=="/";
-	if($bin_url_inicio_barra){
-		registrar("abia1 Advertencia: El archivo '$url' es del sistema, por eso no se va a borrar.");
-	}else{
-		$bin_existe_archivo = file_exists($url);
-		if($bin_existe_archivo){
-			$bin_borrar_archivo = unlink($url);
-			if($bin_borrar_archivo){
-				registrar("bia3 Archivo '$url' borrado correctamente.");
-			}else{
-				registrar("ebia2 El archivo o carpeta '$url' existe, pero no se pudo borrar.");
+function borrar_carpeta_sin_contenido($url){
+	$e = 0;
+	$partes = explode("/",$url);
+	$c = count($partes);
+	$i = 2;
+	$max = 0;
+	$j = 0;
+	while($i>0){
+		$sector = array_slice($partes,0,$i);
+		if($sector){
+			$subcarpeta = implode("/", $sector);
+			$d = es_carpeta_sin_contenido($subcarpeta);
+			if($d==1){
+				$e = borrar_carpeta($subcarpeta);
+				if($e==1){
+					break;
+				}
 			}
+			if($d==0||$d==4){
+				break;
+			}
+			if($max==0){++$i;}else{--$i;}
+			if($i>=$c){$max=1;}
+			if($i<2){break;}
 		}else{
-			registrar("abia4 Advertencia: La ruta '$url' no contiene información, por eso no se va a borrar su contenido.");
+			registrar("bcsc Error: Sector es nulo.");
+			break;
 		}
 	}
+	return $e;
 }
 function borrar_carpeta($url){
 	$d = 0;
@@ -223,65 +235,82 @@ function borrar_carpeta($url){
 	}else{
 		$bin_es_carpeta = is_dir($url);
 		if($bin_es_carpeta){
-			$bin_borrar_carpeta = rmdir($url);
-			if($bin_borrar_carpeta){
-				registrar("bca3 Carpeta '$url' borrada correctamente.");
+			$e = borrar_carpeta_sin_contenido($url);
+			if($e==0){
+				$d = 3;
+			}else{
+				if($e==2){
+					$d = 4;
+				}else{
+					if($e==2){
+						$d = 4;
+					}
+				}
+			}
+		}
+	}
+	return $d;
+}
+function borrar_archivo($url){
+	$d = 0;
+	borrar_carpeta_sin_contenido($url);
+	$bin_url_inicio_barra = substr($url,0,1)=="/";
+	if($bin_url_inicio_barra){
+		registrar("abia1 Advertencia: El archivo '$url' es del sistema, por eso no se va a borrar.");
+		$d = 5;
+	}else{
+		$bin_se_puede_leer = is_readable($url);
+		$bin_se_puede_escribir = is_writable($url);
+		if($bin_se_puede_leer && $bin_se_puede_escribir){
+			$bin_borrar_archivo = unlink($url);
+			if($bin_borrar_archivo){
+				registrar("bia Archivo '$url' borrado correctamente.");
 				$d = 1;
 			}else{
-				registrar("bca3 La carpeta '$url' no se pudo borrar.");
+				registrar("ebia0 Error: El archivo o carpeta '$url' existe, pero no se pudo borrar.");
+				$d = 2;
+			}
+		}else{
+			if(!$bin_se_puede_leer){
+				registrar("abia1 Advertencia: La ruta '$url' no tiene permisos de lectura.");
+				$d = 3;
+			}
+			if(!$bin_se_puede_escribir){
+				registrar("abia2 Advertencia: La ruta '$url' no tiene permisos de escritura.");
 				$d = 3;
 			}
 		}
 	}
 	return $d;
 }
-function borrar_carpeta_sin_contenido($url){
-	$e = 0;
-	$partes = explode("/",$url);
-	$c = count($partes);
-	$i = 1;
-	$max = 0;
-	while($i>0){
-		$sector = array_slice($partes,0,$i);
-		$subcarpeta = implode("/", $sector);
-		$d = es_carpeta_sin_contenido($subcarpeta);
-		if($d==1){
-			$e = borrar_carpeta($subcarpeta);
-			if($e==1){
-				break;
-			}
-		}
-		if($d==0||$d==4){
-			break;
-		}
-		if($max==0){++$i;}else{--$i;}
-		if($i>=$c){$max=1;}
-	}
-	return $e;
-}
 function borrar_url($url){
+	$d = 0;
 	$a = __FUNCTION__;
 	if($url){
 		$rutas = glob( $url ."/*", GLOB_MARK );
 		foreach( $rutas as $ruta ){
 			if(substr($ruta,-1)=="/"){
+				 // La variable $a contiene una función recursiva
 				$a($ruta);
 			}else{
-				borrar_archivo($ruta);
+				$e = borrar_archivo($ruta);
+				if($e==1){$d=1;}
 			}
 		}
 		$bin_es_carpeta = is_dir($url);
 		if($bin_es_carpeta){
-			borrar_carpeta($url);
+			$e = borrar_carpeta($url);
+			if($e==1){$d=2;}
 		}else{
-			borrar_archivo($url);
+			$e = borrar_archivo($url);
+			if($e==1){$d=3;}
 		}
 	}else{
 		registrar("abo Advertencia: La ruta '$url' es nula, por eso no se va a intentar borrar ningún archivo");
+		$d = 4;
 	}
-	return $o;
+	return $d;
 }
-
 function programa(){
 	declarar_get(array("a","b","c"));
 
@@ -321,8 +350,8 @@ function programa(){
 		es_archivo($url,c);
 		ver_pila();
 	}
-	if(a=="bcsc"){
-		borrar_carpeta_sin_contenido($url);
+	if(a=="bu"){
+		borrar_url($url);
 		ver_pila();
 	}
 }
