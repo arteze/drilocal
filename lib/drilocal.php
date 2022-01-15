@@ -138,7 +138,7 @@ function crear_archivo_si_no_existe($url,$datos){
 	return $retorno;
 }
 function es_carpeta($url){
-	$d = 2;
+	$d = 4;
 	$se_puede_leer = is_readable($url);
 	if($se_puede_leer){
 		$bin_es_carpeta = is_dir($url);
@@ -147,7 +147,7 @@ function es_carpeta($url){
 			$d = 1;
 		}else{
 			registrar("ec2 La ruta '$url' es un archivo.");
-			$d = 2;
+			$d = 3;
 		}
 	}else{
 		registrar("ec0: La ruta '$url' no se puede leer.");
@@ -158,17 +158,11 @@ function es_carpeta($url){
 function es_archivo($url){
 	$d = 2;
 	$bin_es_carpeta = es_carpeta($url);
-	if($bin_es_carpeta==2){
-		$d = 1;
-	}else{
-		if($bin_es_carpeta==3){
-			$d = 3;
-		}else{
-			if($bin_es_carpeta==0){
-				$d = 0;
-			}
-		}
-	}
+	if($bin_es_carpeta==3){$d = 1;}
+	if($bin_es_carpeta==0){$d = 5;}
+	if($bin_es_carpeta==1){$d = 6;}
+	if($bin_es_carpeta==4){$d = 7;}
+	if($d==2){$d=$bin_es_carpeta;}
 	return $d;
 }
 function es_carpeta_sin_contenido($url){
@@ -233,8 +227,9 @@ function borrar_carpeta($url){
 		registrar("abca1 Advertencia: La carpeta '$url' es del sistema, por eso no se va a borrar.");
 		$d = 2;
 	}else{
-		$bin_es_carpeta = is_dir($url);
-		if($bin_es_carpeta){
+		$bin_es_carpeta = es_carpeta($url);
+		var_dump($bin_es_carpeta);
+		if($bin_es_carpeta==1){
 			$e = borrar_carpeta_sin_contenido($url);
 			if($e==0){
 				$d = 3;
@@ -249,6 +244,7 @@ function borrar_carpeta($url){
 			}
 		}
 	}
+	* */
 	return $d;
 }
 function borrar_archivo($url){
@@ -299,6 +295,8 @@ function borrar_url($url){
 		}
 		$bin_es_carpeta = es_carpeta($url);
 		$bin_es_archivo = es_archivo($url);
+		var_dump($bin_es_carpeta);
+		var_dump($bin_es_archivo);
 		if($bin_es_carpeta==1){
 			$e = borrar_carpeta($url);
 			if($e==1){$d=2;}
