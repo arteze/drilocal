@@ -143,15 +143,14 @@ function es_carpeta($url){
 	if($se_puede_leer){
 		$bin_es_carpeta = is_dir($url);
 		if($bin_es_carpeta){
-			borrar_url($url);
-			crear_archivo($url,$datos);
+			registrar("ec La ruta '$url' es una carpeta.");
 			$d = 3;
 		}else{
-			registrar("dus El archivo '$url' existe.");
+			registrar("ec2 La ruta '$url' es un archivo.");
 			$d = 2;
 		}
 	}else{
-		registrar("ed0: La ruta '$url' no se puede leer.");
+		registrar("ec0: La ruta '$url' no se puede leer.");
 		$d = 0;
 	}
 	return $d;
@@ -159,8 +158,16 @@ function es_carpeta($url){
 function es_archivo($url){
 	$d = 2;
 	$bin_es_carpeta = es_carpeta($url);
-	if($bin_es_carpeta==0){
+	if($bin_es_carpeta==2){
 		$d = 1;
+	}else{
+		if($bin_es_carpeta==3){
+			$d = 3;
+		}else{
+			if($bin_es_carpeta==0){
+				$d = 0;
+			}
+		}
 	}
 	return $d;
 }
@@ -290,6 +297,10 @@ function programa(){
 	}
 	if(a=="ca"){
 		crear_archivo($url,c);
+		ver_pila();
+	}
+	if(a=="ea"){
+		es_archivo($url,c);
 		ver_pila();
 	}
 	if(a=="edsc"){
