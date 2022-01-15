@@ -8,6 +8,7 @@ error_reporting(E_ALL);
 // dg    declarar_get($array)
 // d     depurar()
 // r     registrar($o,$registro)
+// vp    ver_pila()
 // oi    oi($o,$propiedad)
 // oa    oa($o,$propiedad,$valor)
 // cc    crear_carpeta($url)
@@ -38,6 +39,10 @@ function registrar($registro){
 	array_push($o->registro,$registro);
 	return $o;
 }
+function ver_pila(){
+	$o = $GLOBALS["o"];
+	echo json_encode($o);
+}
 function oi($o,$propiedad){
 	return $o->$propiedad;
 }
@@ -65,16 +70,18 @@ function crear_carpeta($url){
 	return $ecod;
 }
 function crear_subcarpeta($url){
+	$ecod = 0;
 	$partes = explode("/",$url);
 	$t = count($partes);
 	$sector = array_slice($partes,0,$t-1);
 	$subcarpeta = implode("/", $sector);
-	crear_carpeta($subcarpeta);
-	return $t;
+	$var_crear_carpeta = crear_carpeta($subcarpeta);
+	$ecod = $var_crear_carpeta;
+	return $ecod;
 }
 function crear_archivo($url,$datos){
-	$var_carpeta = crear_subcarpeta($url);
-	if($var_carpeta==1){
+	$var_crear_subcarpeta = crear_subcarpeta($url);
+	if($var_crear_subcarpeta==1||$var_crear_subcarpeta==3){
 		$var_crear_archivo = file_put_contents($url,$datos);
 		if(!$datos){
 			$datos = "";
@@ -97,17 +104,17 @@ function crear_carpeta_si_no_existe($url){
 	$bin_existe_url = file_exists($url);
 	if($bin_existe_url){
 		$bin_es_carpeta = is_dir($url);
-		if($bin_es_carpeta){
-			registrar("cas La carpeta '$url' existía.");
-			$retorno = 3;
-		}else{
+		if(!$bin_es_carpeta){
 			borrar_url($url);
 			crear_carpeta($url);
-			$retorno = 2;
+			$retorno = 1;
+		}else{
+			registrar("cas La carpeta '$url' existía.");
+			$retorno = 0;
 		}
 	}else{
 		crear_carpeta($url);
-		$retorno = 1;
+		$retorno = 3;
 	}
 	return $retorno;
 }
@@ -134,10 +141,17 @@ function es_carpeta($url){
 	$d = 2;
 	$se_puede_leer = is_readable($url);
 	if($se_puede_leer){
-		registrar("ed La ruta '$url' es una carpeta.");
-		$d = 1;
+		$bin_es_carpeta = is_dir($url);
+		if($bin_es_carpeta){
+			borrar_url($url);
+			crear_archivo($url,$datos);
+			$d = 3;
+		}else{
+			registrar("dus El archivo '$url' existe.");
+			$d = 2;
+		}
 	}else{
-		registrar("ed0: La ruta '$url' es un archivo.");
+		registrar("ed0: La ruta '$url' no se puede leer.");
 		$d = 0;
 	}
 	return $d;
@@ -259,24 +273,28 @@ function programa(){
 	}
 	if(a=="r"){
 		registrar(b);
-		var_dump($o);
+		ver_pila();
 	}
 	if(a=="oa"){
 		$b = (object)array();
 		oa($b,b,c);
-		var_dump($b);
+		ver_pila();
 	}
 	if(a=="cc"){
 		crear_carpeta($url);
-		var_dump($o);
+		ver_pila();
 	}
 	if(a=="cs"){
 		crear_subcarpeta($url);
-		var_dump($o);
+		ver_pila();
+	}
+	if(a=="ca"){
+		crear_archivo($url,c);
+		ver_pila();
 	}
 	if(a=="edsc"){
 		es_carpeta_sin_contenido($url);
-		var_dump($o);
+		ver_pila();
 	}
 }
 programa();
