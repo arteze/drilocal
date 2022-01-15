@@ -21,7 +21,7 @@ error_reporting(E_ALL);
 // ecsc  es_carpeta_sin_contenido($url)
 // ba    borrar_archivo($url)
 // bc    borrar_carpeta($url)
-// bdsc  borrar_carpeta_sin_contenido($url)
+// bcsc  borrar_carpeta_sin_contenido($url)
 // bu    borrar_url($url)
 
 // programa()
@@ -187,7 +187,7 @@ function es_carpeta_sin_contenido($url){
 			}
 		}else{
 			registrar("ecsc1 La ruta '$url' es un archivo.");
-			$d = 1;
+			$d = 0;
 		}
 	}else{
 		registrar("ecsc0 La carpeta '$url' no se puede leer.");
@@ -215,40 +215,49 @@ function borrar_archivo($url){
 	}
 }
 function borrar_carpeta($url){
+	$d = 0;
 	$bin_url_inicio_barra = substr($url,0,1)== "/";
 	if($bin_url_inicio_barra){
 		registrar("abca1 Advertencia: La carpeta '$url' es del sistema, por eso no se va a borrar.");
+		$d = 2;
 	}else{
 		$bin_es_carpeta = is_dir($url);
 		if($bin_es_carpeta){
 			$bin_borrar_carpeta = rmdir($url);
 			if($bin_borrar_carpeta){
 				registrar("bca3 Carpeta '$url' borrada correctamente.");
+				$d = 1;
+			}else{
+				registrar("bca3 La carpeta '$url' no se pudo borrar.");
+				$d = 3;
 			}
 		}
 	}
+	return $d;
 }
 function borrar_carpeta_sin_contenido($url){
+	$e = 0;
 	$partes = explode("/",$url);
 	$c = count($partes);
 	$i = 1;
-	for(;$i<$c;++$i){
+	$max = 0;
+	while($i>0){
 		$sector = array_slice($partes,0,$i);
 		$subcarpeta = implode("/", $sector);
 		$d = es_carpeta_sin_contenido($subcarpeta);
 		if($d==1){
-			borrar_carpeta($subcarpeta);
+			$e = borrar_carpeta($subcarpeta);
+			if($e==1){
+				break;
+			}
 		}
-	}
-	for(;$i>0;--$i){
-		$sector = array_slice($partes,0,$i);
-		$subcarpeta = implode("/", $sector);
-		$d = es_carpeta_sin_contenido($subcarpeta);
-		if($d){
-			borrar_carpeta($subcarpeta);
+		if($d==0||$d==4){
+			break;
 		}
+		if($max==0){++$i;}else{--$i;}
+		if($i>=$c){$max=1;}
 	}
-	return $c;
+	return $e;
 }
 function borrar_url($url){
 	$a = __FUNCTION__;
@@ -312,8 +321,8 @@ function programa(){
 		es_archivo($url,c);
 		ver_pila();
 	}
-	if(a=="ecsc"){
-		es_carpeta_sin_contenido($url);
+	if(a=="bcsc"){
+		borrar_carpeta_sin_contenido($url);
 		ver_pila();
 	}
 }
