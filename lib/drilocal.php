@@ -229,6 +229,7 @@ function borrar_carpeta($url){
 	}else{
 		$bin_es_carpeta = es_carpeta($url);
 		var_dump($bin_es_carpeta);
+		/*
 		if($bin_es_carpeta==1){
 			$e = borrar_carpeta_sin_contenido($url);
 			if($e==0){
@@ -243,8 +244,8 @@ function borrar_carpeta($url){
 				}
 			}
 		}
+		* */
 	}
-	* */
 	return $d;
 }
 function borrar_archivo($url){
