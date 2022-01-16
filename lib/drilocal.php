@@ -41,6 +41,7 @@ function registrar($registro){
 }
 function ver_pila(){
 	$o = $GLOBALS["o"];
+	header('Content-Type: application/json; charset=utf-8');
 	echo json_encode($o);
 }
 function oi($o,$propiedad){
@@ -195,31 +196,26 @@ function borrar_carpeta_sin_contenido($url){
 	$c = count($partes);
 	$i = 2;
 	$max = 0;
-	$j = 0;
 	while($i>0){
-		$sector = NULL;
-		if($i>=0 && $i<=$c){
-			$sector = array_slice($partes,0,$i);
-		}
-		if($sector!=NULL){
-			$subcarpeta = implode("/", $sector);
-			$d = es_carpeta_sin_contenido($subcarpeta);
-			if($d==1){
-				$e = borrar_carpeta($subcarpeta);
-				if($e==1){
-					break;
-				}
-			}
-			if($d==0||$d==4){
+		$sector = array_slice($partes,0,$i);
+		$subcarpeta = implode("/", $sector);
+		$d = es_carpeta_sin_contenido($subcarpeta);
+		registrar($subcarpeta);
+		registrar("Es carpeta sin contenido: Cod: ".$d);
+		/*
+		if($d==1){
+			$e = borrar_carpeta($subcarpeta);
+			if($e==1){
 				break;
 			}
-			if($max==0){++$i;}else{--$i;}
-			if($i>=$c){$max=1;}
-			if($i<2){break;}
-		}else{
-			registrar("bcsc Error: Sector es nulo.");
+		}
+		if($d==0||$d==4){
 			break;
 		}
+		* */
+		if($max==0){++$i;}else{--$i;}
+		if($i>=$c){$max=1;}
+		if($i<2){break;}
 	}
 	return $e;
 }
@@ -296,8 +292,6 @@ function borrar_url($url){
 		}
 		$bin_es_carpeta = es_carpeta($url);
 		$bin_es_archivo = es_archivo($url);
-		var_dump($bin_es_carpeta);
-		var_dump($bin_es_archivo);
 		if($bin_es_carpeta==1){
 			$e = borrar_carpeta($url);
 			if($e==1){$d=2;}
