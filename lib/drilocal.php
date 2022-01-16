@@ -204,7 +204,9 @@ function borrar_carpeta_sin_contenido($url){
 			registrar($subcarpeta);
 			$e = rmdir($subcarpeta);
 			if($e){
-				registrar("Carpeta '$subcarpeta' borrada correctamente.");
+				registrar("bcsc Carpeta '$subcarpeta' borrada correctamente.");
+			}else{
+				registrar("abcsc Advertencia: La carpeta '$subcarpeta' no se pudo borrar.");
 			}
 		}
 		if($d==0||$d==4){
