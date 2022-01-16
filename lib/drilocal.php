@@ -225,11 +225,11 @@ function borrar_carpeta($url){
 		$bin_es_carpeta = es_carpeta($url);
 		if($bin_es_carpeta==1){
 			$e = borrar_carpeta_sin_contenido($url);
-			if($e==2){$d = 4;} // No ocurre nada en bcsc.
-			if($e==0){$d = 3;} // Carpeta borrada correctamente.
-			if($e==1){$d = 4;} // La carpeta no se pudo borrar.
-			if($e==3){$d = 5;} // La ruta es un archivo.
-			if($e==4){$d = 6;} // La carpeta no se puede leer.
+			if($e==2){$d = 5;} // No ocurre nada en bcsc.
+			if($e==1){$d = 1;} // Carpeta borrada correctamente.
+			if($e==0){$d = 0;} // La carpeta no se pudo borrar.
+			if($e==3){$d = 6;} // La ruta es un archivo.
+			if($e==4){$d = 7;} // La carpeta no se puede leer.
 		}
 	}
 	return $d;
