@@ -207,9 +207,8 @@ function borrar_carpeta_sin_contenido($url){
 				registrar("abcsc Advertencia: La carpeta '$subcarpeta' no se pudo borrar.");
 			}
 		}
-		if($d==0||$d==4){
-			break;
-		}
+		if($d==0){$e=3;break;} // La ruta es un archivo.
+		if($d==4){$e=4;break;} // La carpeta no se puede leer.
 		if($max==0){++$i;}else{--$i;}
 		if($i>=$c){$max=1;}
 		if($i<2){break;}
@@ -226,17 +225,11 @@ function borrar_carpeta($url){
 		$bin_es_carpeta = es_carpeta($url);
 		if($bin_es_carpeta==1){
 			$e = borrar_carpeta_sin_contenido($url);
-			if($e==0){
-				$d = 3;
-			}else{
-				if($e==2){
-					$d = 4;
-				}else{
-					if($e==2){
-						$d = 4;
-					}
-				}
-			}
+			if($e==2){$d = 4;} // No ocurre nada en bcsc.
+			if($e==0){$d = 3;} // Carpeta borrada correctamente.
+			if($e==1){$d = 4;} // La carpeta no se pudo borrar.
+			if($e==3){$d = 5;} // La ruta es un archivo.
+			if($e==4){$d = 6;} // La carpeta no se puede leer.
 		}
 	}
 	return $d;
