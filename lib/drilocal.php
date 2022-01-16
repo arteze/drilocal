@@ -216,7 +216,7 @@ function borrar_carpeta_sin_contenido($url){
 	return $e;
 }
 function borrar_carpeta($url){
-	$d = 0;
+	$d = 8;
 	$bin_url_inicio_barra = substr($url,0,1)== "/";
 	if($bin_url_inicio_barra){
 		registrar("abca1 Advertencia: La carpeta '$url' es del sistema, por eso no se va a borrar.");
@@ -235,7 +235,7 @@ function borrar_carpeta($url){
 	return $d;
 }
 function borrar_archivo($url){
-	$d = 0;
+	$d = 6;
 	borrar_carpeta_sin_contenido($url);
 	$bin_url_inicio_barra = substr($url,0,1)=="/";
 	if($bin_url_inicio_barra){
@@ -260,7 +260,7 @@ function borrar_archivo($url){
 			}
 			if(!$bin_se_puede_escribir){
 				registrar("abia2 Advertencia: La ruta '$url' no tiene permisos de escritura.");
-				$d = 3;
+				$d = 4;
 			}
 		}
 	}
