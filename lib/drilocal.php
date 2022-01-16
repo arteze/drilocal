@@ -83,10 +83,8 @@ function crear_subcarpeta($url){
 function crear_archivo($url,$datos){
 	$var_crear_subcarpeta = crear_subcarpeta($url);
 	if($var_crear_subcarpeta==1||$var_crear_subcarpeta==3){
+		if(!$datos){$datos = "";}
 		$var_crear_archivo = file_put_contents($url,$datos);
-		if(!$datos){
-			$datos = "";
-		}
 		if($var_crear_archivo===strlen($datos)){
 			registrar("co Archivo '$url' creado correctamente.");
 		}else{
@@ -191,7 +189,7 @@ function es_carpeta_sin_contenido($url){
 	return $d;
 }
 function borrar_carpeta_sin_contenido($url){
-	$e = 0;
+	$e = 2;
 	$partes = explode("/",$url);
 	$c = count($partes);
 	$i = 2;
