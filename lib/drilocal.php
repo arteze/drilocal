@@ -200,19 +200,16 @@ function borrar_carpeta_sin_contenido($url){
 		$sector = array_slice($partes,0,$i);
 		$subcarpeta = implode("/", $sector);
 		$d = es_carpeta_sin_contenido($subcarpeta);
-		registrar($subcarpeta);
-		registrar("Es carpeta sin contenido: Cod: ".$d);
-		/*
 		if($d==1){
-			$e = borrar_carpeta($subcarpeta);
-			if($e==1){
-				break;
+			registrar($subcarpeta);
+			$e = rmdir($subcarpeta);
+			if($e){
+				registrar("Carpeta '$subcarpeta' borrada correctamente.".$d);
 			}
 		}
 		if($d==0||$d==4){
 			break;
 		}
-		* */
 		if($max==0){++$i;}else{--$i;}
 		if($i>=$c){$max=1;}
 		if($i<2){break;}
