@@ -149,7 +149,7 @@ function es_carpeta($url){
 			$d = 3;
 		}
 	}else{
-		registrar("ec0: La ruta '$url' no tiene permisos de lectura.");
+		registrar("ec0: La ruta '$url' no se puede leer.");
 		$d = 0;
 	}
 	return $d;
@@ -183,7 +183,7 @@ function es_carpeta_sin_contenido($url){
 			$d = 0;
 		}
 	}else{
-		registrar("ecsc0 La carpeta '$url' no tiene permisos de lectura.");
+		registrar("ecsc0 La carpeta '$url' no se puede leer.");
 		$d = 4;
 	}	
 	return $d;
@@ -208,7 +208,7 @@ function borrar_carpeta_sin_contenido($url){
 			}
 		}
 		if($d==0){$e=3;break;} // La ruta es un archivo.
-		if($d==4){$e=4;break;} // La carpeta no tiene permisos de lectura.
+		if($d==4){$e=4;break;} // La carpeta no se puede leer.
 		if($max==0){++$i;}else{--$i;}
 		if($i>=$c){$max=1;}
 		if($i<2){break;}
@@ -229,7 +229,7 @@ function borrar_carpeta($url){
 			if($e==1){$d = 1;} // Carpeta borrada correctamente.
 			if($e==0){$d = 0;} // La carpeta no se pudo borrar.
 			if($e==3){$d = 6;} // La ruta es un archivo.
-			if($e==4){$d = 7;} // La carpeta no tiene permisos de lectura.
+			if($e==4){$d = 7;} // La carpeta no se puede leer.
 		}
 	}
 	return $d;
