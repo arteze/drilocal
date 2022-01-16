@@ -197,8 +197,11 @@ function borrar_carpeta_sin_contenido($url){
 	$max = 0;
 	$j = 0;
 	while($i>0){
-		$sector = array_slice($partes,0,$i);
-		if($sector){
+		$sector = NULL;
+		if($i>=0 && $i<=$c){
+			$sector = array_slice($partes,0,$i);
+		}
+		if($sector!=NULL){
 			$subcarpeta = implode("/", $sector);
 			$d = es_carpeta_sin_contenido($subcarpeta);
 			if($d==1){
@@ -228,8 +231,6 @@ function borrar_carpeta($url){
 		$d = 2;
 	}else{
 		$bin_es_carpeta = es_carpeta($url);
-		var_dump($bin_es_carpeta);
-		/*
 		if($bin_es_carpeta==1){
 			$e = borrar_carpeta_sin_contenido($url);
 			if($e==0){
@@ -244,7 +245,6 @@ function borrar_carpeta($url){
 				}
 			}
 		}
-		* */
 	}
 	return $d;
 }
@@ -349,6 +349,10 @@ function programa(){
 	}
 	if(a=="ea"){
 		es_archivo($url,c);
+		ver_pila();
+	}
+	if(a=="bcsc"){
+		borrar_carpeta_sin_contenido($url);
 		ver_pila();
 	}
 	if(a=="bu"){
