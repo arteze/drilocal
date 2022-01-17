@@ -298,8 +298,10 @@ function borrar_url($url){
 }
 function programa(){
 	declarar_get(array("a","b","c"));
-
-	$subcarpeta = json_decode(file_get_contents("subcarpeta.json"))[0];
+	
+	$array_subcarpeta = file_get_contents("subcarpeta.json");
+	$subcarpeta_nombre = json_decode($nombre_subcarpeta)[0];
+	$subcarpeta = "../".$subcarpeta_nombre."/";
 
 	$GLOBALS["o"] = (object)array();
 	
